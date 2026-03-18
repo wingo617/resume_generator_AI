@@ -20,7 +20,7 @@ const DEFAULT_PROFILE = {
 - Implemented CI/CD pipelines with GitHub Actions, cutting deploy time by 60%
 - Mentored 3 junior developers and ran weekly code reviews
 
-Software Engineer, StartupXYZ (2019–2021)
+Software Engineer, StartupXYZ (2015–2021)
 - Launched a React Native mobile app with 50k downloads in first 3 months
 - Designed and built RESTful APIs in Node.js integrated with Stripe and Twilio
 - Improved PostgreSQL query performance by 35% through indexing and query optimization`,
@@ -30,7 +30,7 @@ DevProxy — CLI tool for mocking API responses during local development (used b
   certifications: "AWS Certified Solutions Architect – Associate\nGoogle Cloud Professional Data Engineer",
 };
 
-export default function FormPage({ onBack, onGenerated }) {
+export default function FormPage({ onBack, onGenerated, onLogout }) {
   const [jobDescription, setJobDescription] = useState("");
   const [profile, setProfile] = useState(DEFAULT_PROFILE);
   const [loading, setLoading] = useState(false);
@@ -66,6 +66,9 @@ export default function FormPage({ onBack, onGenerated }) {
           <ArrowLeft size={16} /> Back
         </button>
         <div className={styles.headerTitle}>ResumeAI</div>
+        <button className={styles.logoutBtn} onClick={onLogout} title="Sign out" style={{background:"none",border:"1.5px solid var(--border)",color:"var(--muted)",borderRadius:"4px",padding:"6px 10px",cursor:"pointer",fontSize:"0.8rem",display:"flex",alignItems:"center",gap:"6px"}}>
+          Sign out
+        </button>
       </header>
 
       <div className={styles.content}>
@@ -105,7 +108,7 @@ export default function FormPage({ onBack, onGenerated }) {
               <div className={styles.profileBody}>
                 <div className={styles.profileNote}>
                   ✦ Your contact info and education stay fixed. The AI will rewrite your
-                  <strong> summary</strong>, <strong>skills</strong>, <strong>experience bullets</strong>, and <strong>projects</strong> to match the job above.
+                  <strong>summary</strong>, <strong>skills</strong>, <strong>experience bullets</strong>, and <strong>projects</strong> to match the job above.
                 </div>
 
                 <div className={styles.grid2}>
@@ -116,7 +119,7 @@ export default function FormPage({ onBack, onGenerated }) {
                   <Field label="LinkedIn URL" value={profile.linkedin} onChange={update("linkedin")} placeholder="linkedin.com/in/janesmith" />
                   <Field label="GitHub URL" value={profile.github} onChange={update("github")} placeholder="github.com/janesmith" />
                 </div>
-                <div className={styles.aiTag}><Sparkles size={11} /> AI will tailor this</div>
+
                 <TextArea label="Professional Summary" value={profile.summary} onChange={update("summary")}
                   placeholder="Brief overview of your background..." rows={3} />
 
@@ -135,7 +138,7 @@ export default function FormPage({ onBack, onGenerated }) {
 
                 <TextArea label="Education *" value={profile.education} onChange={update("education")}
                   placeholder="B.S. Computer Science, UC Berkeley, 2019, GPA 3.7" rows={2} />
-                <div className={styles.aiTag}><Sparkles size={11} /> AI will tailor this</div>
+
                 <TextArea label="Projects (optional)" value={profile.projects} onChange={update("projects")}
                   placeholder="Personal or open-source projects..." rows={3} />
 
