@@ -4,5 +4,9 @@
   "scripts": {
     "build": "cd frontend && npm install && npm run build",
     "dev": "cd frontend && npm run dev"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
   }
+
 }
