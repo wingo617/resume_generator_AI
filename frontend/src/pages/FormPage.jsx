@@ -119,7 +119,7 @@ export default function FormPage({ onBack, onGenerated, onLogout }) {
                   <Field label="LinkedIn URL" value={profile.linkedin} onChange={update("linkedin")} placeholder="linkedin.com/in/janesmith" />
                   <Field label="GitHub URL" value={profile.github} onChange={update("github")} placeholder="github.com/janesmith" />
                 </div>
-
+                  <div className={styles.aiTag}><Sparkles size={11} /> AI will tailor this</div>
                 <TextArea label="Professional Summary" value={profile.summary} onChange={update("summary")}
                   placeholder="Brief overview of your background..." rows={3} />
 
@@ -138,7 +138,8 @@ export default function FormPage({ onBack, onGenerated, onLogout }) {
 
                 <TextArea label="Education *" value={profile.education} onChange={update("education")}
                   placeholder="B.S. Computer Science, UC Berkeley, 2019, GPA 3.7" rows={2} />
-
+                
+                <div className={styles.aiTag}><Sparkles size={11} /> AI will tailor this</div>
                 <TextArea label="Projects (optional)" value={profile.projects} onChange={update("projects")}
                   placeholder="Personal or open-source projects..." rows={3} />
 

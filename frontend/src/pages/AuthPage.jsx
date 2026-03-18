@@ -101,7 +101,7 @@ export default function AuthPage({ onAuth }) {
           </div>
           <div className={styles.leftQuote}>
             <p>"Land your dream job with a resume tailored to every application — instantly."</p>
-            <span>Powered by Groq AI</span>
+            <span>Powered by Wingo</span>
           </div>
         </div>
       </div>
