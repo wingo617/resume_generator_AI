@@ -1,0 +1,21 @@
+node_modules/
+.env
+.env.local
+dist/
+frontend/dist/
+.vercel/
+.vercel
+.env*.local
+
+# Database files (Text-based auth)
+data/
+users.txt
+sessions.txt
+*.db
+*.sqlite
+*.sqlite3
+
+# Frontend environment
+frontend/.env
+frontend/.env.local
+
