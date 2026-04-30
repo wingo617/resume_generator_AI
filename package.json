@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "scripts": {
     "build": "cd frontend && npm install && npm run build",
-    "dev": "cd frontend && npm run dev"
+    "dev": "cd frontend && npm run dev",
+    "server": "node server.js",
+    "start": "node server.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "groq-sdk": "^1.1.2"
   }
+
 }
