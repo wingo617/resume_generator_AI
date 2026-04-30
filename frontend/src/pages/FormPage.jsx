@@ -48,8 +48,47 @@ export default function FormPage({ onBack, onGenerated, onLogout }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobDescription, userProfile: profile }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed");
+
+      // Read the body as text first so we can handle empty / non-JSON
+      // responses (e.g. Vercel function timeout, dev-proxy errors, HTML
+      // error pages) without throwing an opaque "Unexpected end of JSON input".
+      const raw = await res.text();
+      let data = null;
+      if (raw && raw.trim()) {
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          throw new Error(
+            res.ok
+              ? "Server returned an invalid response. Please try again."
+              : `Server error (${res.status}). Please try again in a moment.`
+          );
+        }
+      }
+
+      if (!res.ok) {
+        // Empty body + 500 from the dev proxy almost always means the
+        // backend (server.js on :3001) isn't running. Surface that clearly
+        // instead of a generic "Request failed".
+        if (!data && res.status === 500) {
+          throw new Error(
+            "The API didn't respond. If you're running locally, make sure the backend is running (`npm run dev` from the project root, or `node server.js` in a separate terminal). If you're on Vercel, check the function logs and that GROQ_API_KEY is set."
+          );
+        }
+        throw new Error(
+          (data && data.error) ||
+            (res.status === 504
+              ? "The AI took too long to respond. Please try again."
+              : `Request failed (${res.status}). Please try again.`)
+        );
+      }
+
+      if (!data || !data.resume) {
+        throw new Error("The server returned an empty response. Please try again.");
+      }
+
+      // Pass through whatever the user typed for experience so the resume
+      // page shows it verbatim — the AI does not rewrite this field.
       onGenerated(data.resume, { jobDescription, profile });
     } catch (e) {
       setError(e.message);
@@ -107,8 +146,8 @@ export default function FormPage({ onBack, onGenerated, onLogout }) {
             {profileOpen && (
               <div className={styles.profileBody}>
                 <div className={styles.profileNote}>
-                  ✦ Your contact info and education stay fixed. The AI will rewrite your
-                  <strong>summary</strong>, <strong>skills</strong>, <strong>experience bullets</strong>, and <strong>projects</strong> to match the job above.
+                  ✦ Your contact info, work experience, and education stay fixed. The AI will rewrite your
+                  <strong>summary</strong>, <strong>skills</strong>, and <strong>projects</strong> to match the job above.
                 </div>
 
                 <div className={styles.grid2}>
@@ -129,12 +168,9 @@ export default function FormPage({ onBack, onGenerated, onLogout }) {
                     placeholder="List everything — the AI picks what's relevant to the job..." rows={3} />
                 </div>
 
-                <div className={styles.aiTaggedField}>
-                  <div className={styles.aiTag}><Sparkles size={11} /> AI will tailor this</div>
-                  <TextArea label="Work Experience *" value={profile.experience} onChange={update("experience")}
-                    placeholder={`Senior Developer, Acme Corp (2021–Present)\n- Built microservices serving 2M users\n- Led team of 5 engineers`}
-                    rows={9} />
-                </div>
+                <TextArea label="Work Experience (optional)" value={profile.experience} onChange={update("experience")}
+                  placeholder={`Senior Developer, Acme Corp (2021–Present)\n- Built microservices serving 2M users\n- Led team of 5 engineers\n\n(Used as-is — the AI will not rewrite this section.)`}
+                  rows={9} />
 
                 <TextArea label="Education *" value={profile.education} onChange={update("education")}
                   placeholder="B.S. Computer Science, UC Berkeley, 2019, GPA 3.7" rows={2} />
@@ -155,7 +191,7 @@ export default function FormPage({ onBack, onGenerated, onLogout }) {
           <button
             className={styles.generateBtn}
             onClick={handleGenerate}
-            disabled={loading || !jobDescription.trim() || !profile.name || !profile.experience}
+            disabled={loading || !jobDescription.trim() || !profile.name}
           >
             {loading ? (
               <><Loader2 size={18} className={styles.spin} /> Tailoring your resume…</>
@@ -166,7 +202,7 @@ export default function FormPage({ onBack, onGenerated, onLogout }) {
 
           {!loading && jobDescription.trim() && (
             <p className={styles.hint}>
-              AI tailors your summary, skills, experience bullets, and projects to match the job — contact info and education stay fixed.
+              AI tailors your summary, skills, and projects to match the job — your contact info, work experience, and education stay exactly as you wrote them.
             </p>
           )}
         </div>
